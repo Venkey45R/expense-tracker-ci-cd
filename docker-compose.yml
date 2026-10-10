@@ -1,0 +1,54 @@
+services:
+  backend-dev:
+    build:
+      context: .
+      dockerfile: server/Dockerfile.backend
+      target: dev
+    volumes:
+      - ./server:/app
+    ports:
+      - "3001:3001"
+    depends_on:
+      - db
+  frontend-dev:
+    build:
+      context: .
+      dockerfile: expense/Dockerfile.frontend
+      target: dev
+    volumes:
+      - ./expense:/app
+      - /app/node_modules
+    ports:
+      - "3000:3000"
+    depends_on:
+      - backend-dev
+  
+  backend-prod:
+    build:
+      context: .
+      dockerfile: server/Dockerfile.backend
+      target: prod
+    ports:
+      - "8080:3001"
+    depends_on:
+      - db
+  
+  frontend-prod:
+    build:
+      context: .
+      dockerfile: expense/Dockerfile.frontend
+      target: prod
+    ports:
+      - "8000:80"
+    depends_on:
+      - backend-prod
+  
+  db:
+    image: mongo:latest
+    ports:
+      - "27017:27017"
+    volumes:
+      - mern_db:/data/db
+
+volumes:
+  mern_db:
